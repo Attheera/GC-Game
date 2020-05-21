@@ -1,0 +1,21 @@
+{
+  "name": "gc-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "npx nodemon --watch . node app.js",
+    "test": "test"
+  },
+  "repository": "https://github.com/Attheera/GC-Game.git",
+  "keywords": [
+    "idle",
+    "game"
+  ],
+  "author": "Attheera.Rachkeeree",
+  "license": "ISC"
+}
