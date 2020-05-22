@@ -9,7 +9,10 @@ const SCREEN_HEIGHT = 600;
 let game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 canvas.addEventListener('click', function(event) {
-    game.input(event);
+    const rect = canvas.getBoundingClientRect()
+    const x = event.clientX - rect.left
+    const y = event.clientY - rect.top
+    game.input({x, y});
 }, false);
 
 function gameLoop(timeStamp) {
