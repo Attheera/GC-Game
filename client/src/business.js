@@ -160,25 +160,17 @@ export default class Business {
         if (this.game.balance >= this.price) {
             this.game.updateBalance(-this.price);
             this.upgrade_cnt++;
-
             if (this.upgrade_cnt >= this.max_upgrade) {
                 this.max_upgrade *= 2;
-                this.process_time = this.base_time * Math.pow(0.5, this.tier);
+                this.tier++;
+                if (this.tier % 2 == 0) {
+                    this.process_time = this.base_time / 2;
+                } else {
+                    this.revenue_modifier *= 2
+                }
             }
             this.price = this.price * this.base_price_multiplier;
             this.revenue = this.base_revenue * this.upgrade_cnt * this.revenue_modifier;
-            
-        }
-    }
-    calculateMaxUpgrade(count = 0, price = 0) {
-        if (this.game.balance >=
-            price + (this.price * Math.pow(this.base_price_multiplier, count))
-            ){
-            let new_price = price + (this.price * Math.pow(this.base_price_multiplier, count))
-            count ++;
-            return this.calculateMaxUpgrade(count, new_price);
-        } else {
-            return { count: count, price: price };
         }
     }
     activateManager() {
@@ -187,15 +179,15 @@ export default class Business {
             this.start_time = this.game.current_timestamp;
         } 
     }
-    calculateRevenueByTime(elapsed_time, remain_process_time) {
-        let remain_elapsed_time = elapsed_time - remain_process_time;
+    calculateRevenueByTime(elapsed_time) {
+        let remain_elapsed_time = elapsed_time - this.remain_process_time;
         let round_cnt = remain_elapsed_time > 0 ? Math.floor(remain_elapsed_time / this.process_time) : 0;
         let remain_time = remain_elapsed_time % this.process_time;
         this.start_time = Math.abs(remain_time) - this.process_time + this.game.current_timestamp;
         return round_cnt * this.revenue;
     }
-    calculateLastProgress(elapsed_time, remain_process_time){
-        let delta_time = elapsed_time - remain_process_time;
+    calculateLastProgress(elapsed_time){
+        let delta_time = elapsed_time - this.remain_process_time;
         if (delta_time > 0) {
             this.isRunning = false;
             return this.revenue;
@@ -234,6 +226,7 @@ export default class Business {
         this.price = data.price;
         this.ableToUpgrade = data.ableToUpgrade;
         this.ableToPurchase = data.ableToPurchase;
+        this.remain_process_time = data.remain_process_time
         this.process_time = data.process_time;
     }
 }

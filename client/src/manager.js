@@ -10,14 +10,6 @@ export default class Manager {
         this.ableToPurchase = false;
         this.isPurchase = false;
 
-        this.icon = new Image();
-        this.icon.src = '../client/assets/images/business_' + this.m_idx + '.png';
-        
-        this.btn_purchase = new Image();
-        this.btn_purchase.src = '../client/assets/images/btn_purchase.png';
-        this.btn_purchase_disable = new Image();
-        this.btn_purchase_disable.src = '../client/assets/images/btn_purchase_disable.png';
-        
         this.manager_size_x = 300;
         this.manager_size_y = 80;
         this.icon_width = 60;
@@ -34,8 +26,16 @@ export default class Manager {
         this.icon_y = this.purchase_y + 5;
 
         this.font_purchase = "14px Arial";
+
+        this.icon = new Image();
+        this.icon.src = '../client/assets/images/business_' + this.m_idx + '.png';
+        this.btn_purchase = new Image();
+        this.btn_purchase.src = '../client/assets/images/btn_purchase.png';
+        this.btn_purchase_disable = new Image();
+        this.btn_purchase_disable.src = '../client/assets/images/btn_purchase_disable.png';
+        
     }
-    update(timeStamp) {
+    update(timestamp) {
         this.ableToPurchase = this.game.balance >= this.price ? true : false;
     }
     draw(ctx) {

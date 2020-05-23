@@ -5,6 +5,7 @@ export default class Shop {
         this.game = game; 
         this.max_manager = max_manager;
 
+        this.isOpen = false;
         this.shop_bg = new Image();
         this.shop_bg.src = './client/assets/images/bg_shop.png';
         
@@ -18,10 +19,12 @@ export default class Shop {
             this.managers.push( new Manager(this.game, i));
         }
     }
-    update(timeStamp) {
-        this.managers.forEach(manager => manager.update(timeStamp));
+    update(timestamp) {
+        if (!this.isOpen) return;
+        this.managers.forEach(manager => manager.update(timestamp));
     }
     draw(ctx) {
+        if (!this.isOpen) return;
         ctx.drawImage(this.shop_bg, 0, 0, this.game.gameWidth, this.game.gameHeight );
 
         ctx.font = this.font_title;
@@ -30,6 +33,7 @@ export default class Shop {
         this.managers.forEach(manager => manager.draw(ctx));
     }
     onClick(x, y) {
+        if (!this.isOpen) return;
         this.managers.forEach(manager => manager.onClick(x, y));
     }
 }

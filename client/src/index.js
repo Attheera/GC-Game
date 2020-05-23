@@ -9,7 +9,6 @@ const SCREEN_HEIGHT = 600;
 let game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
 game.checkUser();
 function gameLoop(timeStamp) {
-    ctx.fillStyle = "blue";
     ctx.clearRect(0,0,SCREEN_WIDTH, SCREEN_HEIGHT);
     game.update(timeStamp);
     game.draw(ctx);
