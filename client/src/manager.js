@@ -59,6 +59,8 @@ export default class Manager {
         }
     }
     onClickPurchase() {
+        this.game.s_effect = new Audio(this.game.s_purchase);
+        this.game.s_effect.play();
         this.game.updateBalance(-this.price);
         this.isPurchase = true;
         this.game.businesses[this.m_idx].activateManager();

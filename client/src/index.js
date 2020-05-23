@@ -26,6 +26,7 @@ canvas.addEventListener('click', function(event) {
 var money = 100000;
 window.addEventListener('keydown', function(event) {
     if (event.key == 'Escape') {
+        game.s_bgm.stop();
         game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
         game.restart();
     } else if (event.key == 'c') {

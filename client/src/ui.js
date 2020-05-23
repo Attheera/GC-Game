@@ -33,6 +33,8 @@ export default class UI {
         if (y > this.btn_shop_y && y < this.btn_shop_y + this.btn_shop_height 
             && x > this.btn_shop_x && x < this.btn_shop_x + this.btn_shop_width) {
                 this.game.shop.isOpen = !this.game.shop.isOpen;
+                this.game.s_effect = new Audio(this.game.s_click);
+                this.game.s_effect.play();
         }
     }
 }

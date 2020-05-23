@@ -136,6 +136,8 @@ export default class Business {
         if (this.isPurchase && y > this.icon_y && y < this.icon_y + this.icon_height 
             && x > this.icon_x && x < this.icon_x + this.icon_width) {
             if (!this.isRunning && !this.isManager) {
+                this.game.s_effect = new Audio(this.game.s_upgrade);
+                this.game.s_effect.play();
                 this.isRunning = true;
                 this.start_time = this.game.current_timestamp;
             }
@@ -149,6 +151,8 @@ export default class Business {
     }
     onClickPurchase() {
         if (this.game.balance >= this.purchase_price) {
+            this.game.s_effect = new Audio(this.game.s_purchase);
+            this.game.s_effect.play();
             this.game.updateBalance(-this.purchase_price);
             this.isPurchase = true;
             if (this.isManager) {
@@ -158,6 +162,8 @@ export default class Business {
     }
     onClickUpgrade() {
         if (this.game.balance >= this.price) {
+            this.game.s_effect = new Audio(this.game.s_upgrade);
+            this.game.s_effect.play();
             this.game.updateBalance(-this.price);
             this.upgrade_cnt++;
             if (this.upgrade_cnt >= this.max_upgrade) {
