@@ -22,7 +22,7 @@ This project is an Idle Clicker game for coding challenge at Game Closure which 
 
 ### Setup and Run
 
-**Run locally
+**Run locally**
 ```
 $ cd ../GC-Game
 $ npm install
@@ -30,7 +30,7 @@ $ npm start
 
 http://localhost:2020/
 ```
-**Run on cloud service
+**Run on cloud service**
 ```
 Open Heroku dashboard: https://dashboard.heroku.com/apps
 Connect with github project and deploy selected commit
@@ -62,11 +62,11 @@ https://idle-game-for-gc.herokuapp.com
 * Add advertisement to monitize and give temporary perk to user such as double/tripple profit, speed-up businesses, etc.
 
 ### Problem and Solution
-**Save progress and continue
+**Save progress and continue**
 * Problem: Game data got reset when reload window. To continue making progress is required data storage to keep the progress.
 * Solution 1: Save data to local storage and retrieve data when get back to continue the progress
 * Solution 2: Save data to cloud storage and retrieve data when get back to continue the progress (future improvement)
-**Audio Delay
+**Audio Delay**
 * Problem: Sound delay on click when click fast
 * Solution: Reload audio before playing
 
