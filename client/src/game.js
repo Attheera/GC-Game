@@ -35,8 +35,6 @@ export default class Game {
         }
         this.shop = new Shop(this);
         this.isOpenShop = false;
-        
-        this.checkUser();
     }
     input({ x, y }) {
         if (this.isShowWB) {
@@ -120,6 +118,7 @@ export default class Game {
         this.shop.managers.forEach(manager => { manager.isPurchase = user_data.shop.managers[manager.m_idx] });
     }
     saveUserData() {
+        if (!this.user_data) return;
         var businesses = [];
         this.businesses.forEach(business => { businesses.push(business.getLatestProgress()) });
         var managers = [];
@@ -147,5 +146,9 @@ export default class Game {
             }
         });
         this.updateBalance(this.offline_revenue)
+    }
+    restart() {
+        localStorage.removeItem("user_data");
+        location.reload();
     }
 }
