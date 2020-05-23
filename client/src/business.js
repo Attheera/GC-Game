@@ -1,4 +1,4 @@
-import { convertNumber } from './convert.js';
+import { convertNumber, calculateRemainTime } from './calculation.js';
 import { business_name } from './config.js';
 export default class Business { 
     constructor(game, b_idx){
@@ -22,12 +22,9 @@ export default class Business {
         this.max_upgrade = 25;
         this.revenue_modifier = 1;
 
-        this.current_upgrade_cnt = 1;
-        this.current_max_upgrade = 1;
-
-        this.price = this.base_price * this.upgrade_cnt;
+        this.price = b_idx == 0 ? this.base_price : this.base_price * this.base_price_multiplier;
         this.revenue = this.base_revenue * this.upgrade_cnt * this.revenue_modifier;
-        this.process_time = this.base_time;
+        this.process_time = this.tier > 1 ? this.base_time * Math.pow(0.5, this.tier) : this.base_time;
         this.remain_time = '00:00:00';
         this.start_time = 0;
         this.progress_percent = 0;
@@ -96,8 +93,9 @@ export default class Business {
                     this.isRunning = false;
                 }
             } else {
-                this.calculateRemainTime(this.start_time + this.process_time - timeStamp);
-                this.progress_percent = (1 - (this.start_time + this.process_time - timeStamp) / this.process_time ) ;
+                this.remain_time = calculateRemainTime(this.start_time + this.process_time - timeStamp);
+                this.progress_percent = (1 - ((this.start_time + this.process_time - timeStamp) / this.process_time )) ;
+                
             }
         } else {
             this.progress_percent = 0;
@@ -144,14 +142,13 @@ export default class Business {
         } else if (this.isPurchase && y > this.upgrade_y && y < this.upgrade_y + this.upgrade_height 
             && x > this.upgrade_x && x < this.upgrade_x + this.upgrade_width) {
                 this.onClickUpgrade();
-                console.log("upgrade")
         } else if (!this.isPurchase && y > this.purchase_y && y < this.purchase_y + this.purchase_height 
             && x > this.purchase_x && x < this.purchase_x + this.purchase_width) {
                 this.onClickPurchase();
         }
     }
     onClickPurchase() {
-        if (this.ableToPurchase) {
+        if (this.game.balance >= this.purchase_price) {
             this.game.updateBalance(-this.purchase_price);
             this.isPurchase = true;
             if (this.isManager) {
@@ -160,7 +157,7 @@ export default class Business {
         }
     }
     onClickUpgrade() {
-        if (this.ableToUpgrade) {
+        if (this.game.balance >= this.price) {
             this.game.updateBalance(-this.price);
             this.upgrade_cnt++;
 
@@ -170,6 +167,7 @@ export default class Business {
             }
             this.price = this.price * this.base_price_multiplier;
             this.revenue = this.base_revenue * this.upgrade_cnt * this.revenue_modifier;
+            
         }
     }
     calculateMaxUpgrade(count = 0, price = 0) {
@@ -183,21 +181,59 @@ export default class Business {
             return { count: count, price: price };
         }
     }
-
-    calculateRemainTime(duration) {
-        let h = Math.floor((duration / (1000 * 60 * 60)) % 24);
-        let m = Math.floor((duration / (1000 * 60)) % 60);
-        let s = Math.floor((duration / 1000) % 60);
-
-        this.remain_time = (h < 10 ? "0" + h : h) + ':' + 
-                           (m < 10 ? "0" + m : m) + ':' + 
-                           (s < 10 ? "0" + s : s);
-    }
     activateManager() {
         this.isManager = true;
         if (!this.isRunning && this.isPurchase) {
             this.start_time = this.game.current_timestamp;
         } 
     }
-    
+    calculateRevenueByTime(elapsed_time, remain_process_time) {
+        let remain_elapsed_time = elapsed_time - remain_process_time;
+        let round_cnt = remain_elapsed_time > 0 ? Math.floor(remain_elapsed_time / this.process_time) : 0;
+        let remain_time = remain_elapsed_time % this.process_time;
+        this.start_time = Math.abs(remain_time) - this.process_time + this.game.current_timestamp;
+        return round_cnt * this.revenue;
+    }
+    calculateLastProgress(elapsed_time, remain_process_time){
+        let delta_time = elapsed_time - remain_process_time;
+        if (delta_time > 0) {
+            this.isRunning = false;
+            return this.revenue;
+        } else {
+            this.start_time = Math.abs(delta_time) - this.process_time + this.game.current_timestamp;
+            return 0;
+        }
+    }
+    getLatestProgress () {
+        return {
+            b_idx: this.b_idx,
+            isRunning : this.isRunning,
+            isPurchase : this.isPurchase,
+            isManager : this.isManager,
+            tier : this.tier,
+            upgrade_cnt : this.upgrade_cnt,
+            max_upgrade : this.max_upgrade,
+            revenue_modifier : this.revenue_modifier,
+            price: this.price,
+            revenue: this.revenue,
+            ableToUpgrade : this.ableToUpgrade,
+            ableToPurchase : this.ableToPurchase,
+            remain_process_time: this.start_time + this.process_time - this.game.current_timestamp,
+            process_time: this.process_time,
+        }
+    }
+    loadSaveProgress (data) {
+        this.isRunning = data.isRunning;
+        this.isPurchase = data.isPurchase;
+        this.isManager = data.isManager;
+        this.tier = data.tier;
+        this.upgrade_cnt = data.upgrade_cnt;
+        this.max_upgrade = data.max_upgrade;
+        this.revenue_modifier = data.revenue_modifier;
+        this.revenue = data.revenue;
+        this.price = data.price;
+        this.ableToUpgrade = data.ableToUpgrade;
+        this.ableToPurchase = data.ableToPurchase;
+        this.process_time = data.process_time;
+    }
 }

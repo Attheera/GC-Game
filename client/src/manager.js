@@ -1,5 +1,5 @@
 import { business_name } from './config.js';
-import { convertNumber } from './convert.js';
+import { convertNumber } from './calculation.js';
 export default class Manager { 
     constructor(game, m_idx){
         this.game = game;

@@ -17,3 +17,12 @@ export function convertNumber(x) {
     
     return x + y;
 }
+export function calculateRemainTime(duration) {
+    let h = Math.floor((duration / (1000 * 60 * 60)) % 24);
+    let m = Math.floor((duration / (1000 * 60)) % 60);
+    let s = Math.floor((duration / 1000) % 60);
+
+    return (h < 10 ? "0" + h : h) + ':' + 
+                       (m < 10 ? "0" + m : m) + ':' + 
+                       (s < 10 ? "0" + s : s);
+}

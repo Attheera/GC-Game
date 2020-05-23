@@ -1,6 +1,6 @@
 import Business from './business.js';
 import Shop from './shop.js';
-import { convertNumber } from './convert.js';
+import { convertNumber, calculateRemainTime } from './calculation.js';
 import { max_business } from './config.js';
 
 export default class Game { 
@@ -10,6 +10,7 @@ export default class Game {
         this.max_business = max_business;
         this.current_timestamp = 0;
         this.businesses = [];
+        this.balance = 0;
 
         this.img_coin = new Image();
         this.img_coin.src = '../client/assets/images/coin.png';
@@ -17,14 +18,12 @@ export default class Game {
         this.icon_shop.src = '../client/assets/images/icon_shop.png';
         this.bg_game = new Image();
         this.bg_game.src = '../client/assets/images/bg_game.png';
-        this.balance = 20000;
 
         this.balance_x = 155;
         this.balance_y = 50;
         this.coin_width = 60;
         this.coin_height = 60;
         this.font_balance = '28px Arial';
-
 
         this.btn_shop_x = 370;
         this.btn_shop_y = 510;
@@ -37,8 +36,13 @@ export default class Game {
         this.shop = new Shop(this);
         this.isOpenShop = false;
         
+        this.checkUser();
     }
     input({ x, y }) {
+        if (this.isShowWB) {
+            this.isShowWB = false;
+            return;
+        }
         if (this.isOpenShop) {
             this.shop.onClick(x, y);
         } else {
@@ -57,6 +61,7 @@ export default class Game {
         if (this.isOpenShop) {
             this.shop.update(timeStamp);
         }
+        this.saveUserData();
     }
     draw(ctx) {
         ctx.fillStyle = "black";
@@ -76,8 +81,71 @@ export default class Game {
 
         ctx.drawImage(this.icon_shop, this.btn_shop_x, this.btn_shop_y, this.btn_shop_width, this.btn_shop_height );
 
+        if (this.isShowWB) {
+            ctx.textAlign = "center";
+            ctx.drawImage(this.bg_game, 0, 0, this.gameWidth, this.gameHeight);
+            ctx.font = '50px Arial';
+            ctx.fillText("Welcome Back!", 400,150);
+            ctx.font = '30px Arial';
+            ctx.fillText("You were away for " + calculateRemainTime(this.away_time), 400,300);
+            ctx.font = '40px Arial';
+            ctx.fillText("Receive: " + convertNumber(this.offline_revenue), 400, 350);
+        }
     }
     updateBalance(amount) {
-        this.balance += amount;
+        this.balance = this.balance + amount;
+    }
+    checkUser () {
+        let user_data = localStorage.getItem('user_data');
+        if (!user_data) {
+            let user_data = {
+                user_id: new Date().getTime(),
+                balance: 0,
+            }
+            localStorage.setItem("user_data", JSON.stringify(user_data));
+            this.user_data = user_data;
+        } else {
+            this.loadUserData(JSON.parse(user_data));
+            this.calcualteOfflineRevenue();
+            this.away_time = new Date().getTime() - this.user_data.last_timestamp;
+            if (this.away_time > 3000) {
+                this.isShowWB = true;
+            }
+        }
+    }
+    loadUserData(user_data) {
+        this.user_data = user_data;
+        this.balance = user_data.balance;
+        this.businesses.forEach(business => { business.loadSaveProgress(user_data.businesses[business.b_idx]) });
+        this.shop.managers.forEach(manager => { manager.isPurchase = user_data.shop.managers[manager.m_idx] });
+    }
+    saveUserData() {
+        var businesses = [];
+        this.businesses.forEach(business => { businesses.push(business.getLatestProgress()) });
+        var managers = [];
+        this.shop.managers.forEach(manager => { managers.push(manager.isPurchase) });
+        var user_data = {
+            user_id: this.user_data.user_id,
+            balance: this.balance,
+            last_timestamp: new Date().getTime(),
+            businesses: businesses,
+            shop: {
+                managers: managers
+            }
+        }
+        localStorage.setItem("user_data", JSON.stringify(user_data));
+    }
+    calcualteOfflineRevenue () {
+        var elapsed_time = new Date().getTime() - this.user_data.last_timestamp;
+        this.offline_revenue = 0;
+        this.businesses.forEach(business => { 
+            let remain_process_time = this.user_data.businesses[business.b_idx].remain_process_time;
+            if (business.isManager) {
+                this.offline_revenue += business.calculateRevenueByTime(elapsed_time, remain_process_time);
+            } else if (business.isRunning){
+                this.offline_revenue += business.calculateLastProgress(elapsed_time, remain_process_time);
+            }
+        });
+        this.updateBalance(this.offline_revenue)
     }
 }
