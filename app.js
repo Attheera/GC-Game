@@ -9,4 +9,4 @@ app.get('/', function (req, res) {
 app.use('/client', express.static(__dirname + '/client'));
 
 server.listen(PORT);
-console.log(`START Server at ${PORT} ✔`)
+console.log(`START Server at Port: ${PORT} ✔`)

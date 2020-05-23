@@ -170,7 +170,7 @@ export default class Business {
                 this.max_upgrade *= 2;
                 this.tier++;
                 if (this.tier % 2 == 0) {
-                    this.process_time = this.base_time / 2;
+                    this.process_time = this.process_time / 2;
                 } else {
                     this.revenue_modifier *= 2
                 }
