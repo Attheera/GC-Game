@@ -24,18 +24,14 @@ export default class Game {
         this.bg_game.src = '../client/assets/images/bg_game.png';
 
         this.s_bgm = new Audio('../client/assets/sounds/bgm.mp3');
-        this.s_effect = new Audio();
-        this.s_click = '../client/assets/sounds/click.wav';
-        this.s_purchase = '../client/assets/sounds/purchase.wav';
-        this.s_upgrade = '../client/assets/sounds/upgrade.wav';
+        this.s_click = new Audio('../client/assets/sounds/click.wav');
+        this.s_purchase = new Audio('../client/assets/sounds/purchase.wav');
+        this.s_upgrade_tier = new Audio('../client/assets/sounds/upgrade_tier.wav');
 
         this.s_bgm.loop = true;
     }
     input({ x, y }) {
-        this.s_bgm.play();
         if (this.isShowWB) { 
-            this.s_effect = new Audio(this.s_click);
-            this.s_effect.play();
             this.isShowWB = false;
             return;
         }

@@ -17,6 +17,7 @@ function gameLoop(timeStamp) {
 requestAnimationFrame(gameLoop);
 
 canvas.addEventListener('click', function(event) {
+    game.s_bgm.play();
     const rect = canvas.getBoundingClientRect()
     const x = event.clientX - rect.left
     const y = event.clientY - rect.top
@@ -25,8 +26,8 @@ canvas.addEventListener('click', function(event) {
 
 var money = 100000;
 window.addEventListener('keydown', function(event) {
-    if (event.key == 'Escape') {
-        game.s_bgm.stop();
+    if (event.key == 's') {
+        game.s_bgm.pause();
         game = new Game(SCREEN_WIDTH, SCREEN_HEIGHT);
         game.restart();
     } else if (event.key == 'c') {
